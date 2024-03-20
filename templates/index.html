@@ -1,40 +1,50 @@
-{%extends 'base.html' %}
+{% extends 'base.html' %}
+
 {% block head %}
-<title> Task Master</title>
+<title>Bazar.com</title>
 {% endblock %}
 
 {% block body %}
 <div class="content">
-    <h1 style="text-align: center;">Task Master</h1>
-    {% if tasks|length < 1 %}
-    <h4 style="text-align: center;"> There are no tasks. Create one below!</h4>
+    <h1 style="text-align: center;">Bazar.com: A Multi-tier Online Book Store</h1>
+    <h2 style="text-align: center;">Available Books</h2>
+    {% if books|length < 1 %}
+    <h4 style="text-align: center;">No books available in the catalog.</h4>
     {% else %}
-    <table class=" table table-bordered">
+    <table class="table table-bordered">
         <thead>
             <tr>
-                <th scope="col">Task</th>
-                <th scope="col">Added</th>
+                <th scope="col">Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Topic</th>
+                <th scope="col">Stock</th>
+                <th scope="col">Cost</th>
                 <th scope="col">Actions</th>
             </tr>
-            {% for task in tasks %}
         </thead>
         <tbody>
+            {% for book in books %}
             <tr>
-                <td> {{ task.content }}</td>
-                <td> {{ task.date_created.date() }}</td>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author }}</td>
+                <td>{{ book.topic }}</td>
+                <td>{{ book.stock }}</td>
+                <td>${{ book.cost }}</td>
                 <td>
-                    <a href="/delete/{{task.id}}">Delete</a>
+                    <a href="/info/{{ book.id }}">Info</a>
                     <br>
-                    <a href="/update/{{task.id}}">Update</a>
+                    <a href="/purchase/{{ book.id }}">Purchase</a>
                 </td>
             </tr>
+            {% endfor %}
         </tbody>
-        {% endfor %}
     </table>
     {% endif %}
-    <form action="/" method="post" class="form">
-        <input type="text" name="content" id="content">
-        <input type="submit" value="Add Task">
+    <h2 style="text-align: center;">Search Books</h2>
+    <form action="/search" method="GET" class="form" style="text-align: center;">
+        <label for="topic">Enter topic:</label>
+        <input type="text" id="topic" name="topic">
+        <button type="submit">Search</button>
     </form>
 </div>
 {% endblock %}
