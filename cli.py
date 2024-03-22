@@ -1,4 +1,4 @@
-import argparse, requests
+import argparse, requests, json
 
 CATALOG_SERVER_URL = 'http://localhost:5001'
 ORDER_SERVER_URL = 'http://localhost:5002'  # Assuming the order server is running on port 5002
@@ -9,9 +9,10 @@ def search_catalog(topic):
         response.raise_for_status()  # Raise an exception for non-200 status codes
         books = response.json()
         if books:
-            print("Books found in the catalog:")
-            for book in books:
-                print(f"Title: {book['title']}, Author: {book['author']}, Topic: {book['topic']}, Stock: {book['stock']}, Cost: {book['cost']}")
+        #     print("Books found in the catalog:")
+        #     for book in books:
+        #         print(f"Title: {book['title']}, Author: {book['author']}, Topic: {book['topic']}, Stock: {book['stock']}, Cost: {book['cost']}")
+            print(books)
         else:
             print("No books found in the catalog for the given topic.")
     except requests.RequestException as e:
@@ -27,23 +28,14 @@ def get_item_info(item_id):
         print(f"Failed to retrieve item information: {e}")
 
 def purchase_item(item_id):
-    response = requests.post(f'{ORDER_SERVER_URL}/purchase', json={'id': item_id})
-    if response.status_code == 200:
-        book_info = response.json()
-        if book_info['stock'] > 0:
-            # If the book is in stock, initiate purchase
-            purchase_response = requests.post(f'{ORDER_SERVER_URL}/purchase', json={'id': book_id})
-            if purchase_response.status_code == 200:
-                print("Purchase successful!")
-            else:
-                print("Failed to purchase book.")
+        response = requests.post(f'{ORDER_SERVER_URL}/purchase/{item_id}')
+        if response.status_code == 200:
+            print("Purchase successful!")
         else:
-            print("Sorry, the book is out of stock.")
-    else:
-        print("Failed to check stock.")
+            print("Failed to purchase book. Status code:", response.status_code)
 
 def main():
-    print("Welcome to the Bookstore CLI!")
+    print("Welcome to the Bazar!")
     while True:
         print("\nOptions:")
         print("1. Search books by topic")
