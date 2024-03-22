@@ -70,6 +70,23 @@ def search_catalog():
     else:
         return jsonify({'error': 'Query parameter is required for search'}), 400
 
+
+@app.route('/info', methods=['GET'])
+def get_book_info():
+    book_id = request.args.get('id')
+    if book_id:
+        book = Catalog.query.filter_by(id=book_id).first()
+        if book:
+            result = {'id': book.id, 'title': book.title, 'author': book.author, 'topic': book.topic,
+                      'stock': book.stock, 'cost': book.cost}
+            return jsonify(result)
+        else:
+            return jsonify({'error': 'Book not found for the given item ID'}), 404
+    else:
+        return jsonify({'error': 'Book ID parameter is required for info'}), 400
+
+
+
 if __name__ == "__main__":
     cleanup_database()
     add_bazar_books()
