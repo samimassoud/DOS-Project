@@ -48,11 +48,6 @@ def cleanup_database():
 
 
 @app.route('/catalog', methods=['GET'])
-# def get_catalog():
-#     books = Catalog.query.all()
-#     result = [{'id': book.id, 'title': book.title, 'author': book.author, 'topic': book.topic,
-#                'stock': book.stock, 'cost': book.cost} for book in books]
-#     return jsonify(result)
 
 def search_catalog():
     query_param = request.args.get('query')

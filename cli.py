@@ -1,17 +1,15 @@
 import argparse, requests, json
 
 CATALOG_SERVER_URL = 'http://172.17.0.2:5001'
-ORDER_SERVER_URL = 'http://172.17.0.3:5002'  # Assuming the order server is running on port 5002
+ORDER_SERVER_URL = 'http://172.17.0.3:5002' 
 
 def search_catalog(topic):
     try:
         response = requests.get(f'{CATALOG_SERVER_URL}/catalog', params={'query': topic})
-        response.raise_for_status()  # Raise an exception for non-200 status codes
+        response.raise_for_status()  # Raise an exception for any thing that is not 200 status codes
         books = response.json()
         if books:
-        #     print("Books found in the catalog:")
-        #     for book in books:
-        #         print(f"Title: {book['title']}, Author: {book['author']}, Topic: {book['topic']}, Stock: {book['stock']}, Cost: {book['cost']}")
+       
             print(books)
         else:
             print("No books found in the catalog for the given topic.")
