@@ -1,7 +1,7 @@
 import argparse, requests, json
 
-CATALOG_SERVER_URL = 'http://localhost:5001'
-ORDER_SERVER_URL = 'http://localhost:5002'  # Assuming the order server is running on port 5002
+CATALOG_SERVER_URL = 'http://172.17.0.2:5001'
+ORDER_SERVER_URL = 'http://172.17.0.3:5002'  # Assuming the order server is running on port 5002
 
 def search_catalog(topic):
     try:

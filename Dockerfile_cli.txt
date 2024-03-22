@@ -1,0 +1,5 @@
+FROM python:latest
+WORKDIR /app
+COPY cli.py /app
+RUN pip install requests flask flask_sqlalchemy
+CMD ["python", "cli.py"]

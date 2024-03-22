@@ -16,7 +16,9 @@ class Catalog(db.Model):
 
     def __repr__(self):
         return f'<Book {self.id}>'
-
+    
+with app.app_context():
+    db.create_all()
 def add_bazar_books():
     with app.app_context():
         books = [
