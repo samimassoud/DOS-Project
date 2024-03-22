@@ -17,35 +17,32 @@ class Catalog(db.Model):
         return f'<Book {self.id}>'
 
 def add_bazar_books():
-    books = [
+    with app.app_context():
+        books = [
         {'title': 'How to get a good grade in DOS in 40 minutes a day.', 'author': 'Sami', 'topic': 'distributed systems', 'stock': 10, 'cost': 25.0},
         {'title': 'RPCs for Noobs.', 'author': 'Sami', 'topic': 'distributed systems', 'stock': 15, 'cost': 20.0},
         {'title': 'Xen and the Art of Surviving Undergraduate School.', 'author': 'Sami', 'topic': 'undergraduate school', 'stock': 8, 'cost': 30.0},
         {'title': 'Cooking for the Impatient Undergrad.', 'author': 'Sami', 'topic': 'undergraduate school', 'stock': 12, 'cost': 18.0}
-    ]
-    for book_data in books:
-        existing_book = Catalog.query.filter_by(title=book_data['title']).first()
-        if not existing_book:
-            new_book = Catalog(title=book_data['title'], author=book_data['author'], topic=book_data['topic'], stock=book_data['stock'], cost=book_data['cost'])
-            db.session.add(new_book)
-    db.session.commit()
+        ]
+        for book_data in books:
+            existing_book = Catalog.query.filter_by(title=book_data['title']).first()
+            if not existing_book:
+                new_book = Catalog(title=book_data['title'], author=book_data['author'], topic=book_data['topic'], stock=book_data['stock'], cost=book_data['cost'])
+                db.session.add(new_book)
+        db.session.commit()
 
 def cleanup_database():
-    try:
-        # Delete all records from the Catalog table
-        db.session.query(Catalog).delete()
-        db.session.commit()
-        print("Database cleanup successful.")
-    except Exception as e:
-        db.session.rollback()
-        print("Database cleanup failed:", str(e))
+    with app.app_context():
+        try:
+            # Delete all records from the Catalog table
+            db.session.query(Catalog).delete()
+            db.session.commit()
+            print("Database cleanup successful.")
+        except Exception as e:
+            db.session.rollback()
+            print("Database cleanup failed:", str(e))
 
-# Create database tables
-with app.app_context():
-    db.create_all()
 
-# Add initial books to the catalog
-add_bazar_books()
 
 @app.route('/catalog', methods=['GET'])
 def get_catalog():
@@ -74,4 +71,6 @@ def search_catalog():
         return jsonify({'error': 'Query parameter is required for search'}), 400
 
 if __name__ == "__main__":
+    cleanup_database()
+    add_bazar_books()
     app.run(debug=True, host='0.0.0.0', port=5001)

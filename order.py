@@ -1,45 +1,26 @@
-from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
+import requests
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///order.db'
-db = SQLAlchemy(app)
+CATALOG_SERVER_URL = 'http://localhost:5001'
+ORDER_SERVER_URL = 'http://localhost:5002'  # Assuming the order server is running on port 5002
 
-class Order(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    book_id = db.Column(db.Integer, nullable=False)
-    status = db.Column(db.String(20), nullable=False)
-
-    def __repr__(self):
-        return f'<Order {self.id}>'
-
-@app.route('/orders', methods=['GET', 'POST'])
-def orders():
-    if request.method == 'GET':
-        orders = Order.query.all()
-        result = [{'id': order.id, 'book_id': order.book_id, 'status': order.status} for order in orders]
-        return jsonify(result)
-    elif request.method == 'POST':
-        data = request.json
-        new_order = Order(book_id=data['book_id'], status='Pending')
-        db.session.add(new_order)
-        db.session.commit()
-        return jsonify({'message': 'Order placed successfully'}), 201
-
-@app.route('/orders/<int:order_id>', methods=['GET', 'PUT', 'DELETE'])
-def single_order(order_id):
-    order = Order.query.get_or_404(order_id)
-    if request.method == 'GET':
-        return jsonify({'id': order.id, 'book_id': order.book_id, 'status': order.status})
-    elif request.method == 'PUT':
-        data = request.json
-        order.status = data.get('status', order.status)
-        db.session.commit()
-        return jsonify({'message': 'Order updated successfully'})
-    elif request.method == 'DELETE':
-        db.session.delete(order)
-        db.session.commit()
-        return jsonify({'message': 'Order deleted successfully'})
+def purchase_item(item_id):
+    # Check if the item is in stock
+    response = requests.get(f'{CATALOG_SERVER_URL}/info', params={'id': item_id})
+    if response.status_code == 200:
+        item_info = response.json()
+        if item_info['stock'] > 0:
+            # If item is in stock, decrement the stock by 1
+            updated_stock = item_info['stock'] - 1
+            update_response = requests.post(f'{CATALOG_SERVER_URL}/update', json={'id': item_id, 'stock': updated_stock})
+            if update_response.status_code == 200:
+                print("Purchase successful!")
+            else:
+                print("Failed to update stock.")
+        else:
+            print("Item is out of stock.")
+    else:
+        print("Failed to retrieve item information.")
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5002)
+    item_id = input("Enter the ID of the item you want to purchase: ")
+    purchase_item(item_id)
