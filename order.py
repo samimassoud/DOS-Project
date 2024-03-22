@@ -1,8 +1,8 @@
 import requests
 from flask import Flask
 app = Flask(__name__)
-CATALOG_SERVER_URL = 'http://localhost:5001'
-ORDER_SERVER_URL = 'http://localhost:5002'  # Assuming the order server is running on port 5002
+CATALOG_SERVER_URL = 'http://172.17.0.2:5001'
+ORDER_SERVER_URL = 'http://172.17.0.3:5002'  # Assuming the order server is running on port 5002
 
 @app.route('/purchase/<int:item_id>', methods=['POST'])
 def purchase_item(item_id):
